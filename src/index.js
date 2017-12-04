@@ -16,7 +16,12 @@ class Machine extends EventEmitter {
         super();
         this.graph = new Graph();
         this.states = States;
-        this.startAt = this.build(StartAt);
+        try {
+            this.startAt = this.build(StartAt);
+        } catch (err) {
+            console.error(err);
+            console.error(err.stack);
+        }
     }
 
     build(name) {
