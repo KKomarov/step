@@ -19,8 +19,9 @@ class Machine extends EventEmitter {
         try {
             this.startAt = this.build(StartAt);
         } catch (err) {
-            console.error(err);
-            console.error(err.stack);
+            console.log(err.message);
+            console.log(err.stack);
+            throw err;
         }
     }
 
