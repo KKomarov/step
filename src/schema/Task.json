@@ -29,13 +29,13 @@
       "enum": [ true ]
     },
     "Retry": {
-      "type": "Array",
+      "type": "array",
       "items": {
           "$ref": "/Retrier"
       }
     },
     "Catch": {
-      "type": "Array",
+      "type": "array",
       "items": {
         "$ref": "/Catcher"
       }
