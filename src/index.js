@@ -16,6 +16,7 @@ class Machine extends EventEmitter {
         super();
         this.graph = new Graph();
         this.states = States;
+        this.used = new Set();
         try {
             this.startAt = this.build(StartAt);
         } catch (err) {
@@ -26,10 +27,14 @@ class Machine extends EventEmitter {
     }
 
     build(name) {
-        const { graph, states } = this;
+        const { graph, states, used } = this;
 
         const fromState = clone(states[name]);
         fromState.Name = name;
+        if (used.has(name)) {
+            return fromState;
+        }
+        used.add(name);
         graph.addVertex(fromState);
 
         const addEdge = Next => {
@@ -99,6 +104,9 @@ class Machine extends EventEmitter {
 
                     // Only build states that are executed in this
                     // particular invocation of the machine.
+                    if (currentState.Name === 'Again') {
+                        console.log(currentState);
+                    }
                     const state = Factory.create(currentState, Machine);
                     ({ output, next } = yield state.run(result));
 

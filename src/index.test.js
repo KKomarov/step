@@ -211,3 +211,63 @@ test('Timeout Error handling', t => {
     });
 
 });
+
+test('Machine with cycles', t => {
+
+    const json = {
+        StartAt: 'One',
+        States: {
+            "One": {
+                "Type": "Task",
+                "Resource": '__mockresource__',
+                "Next": "Again",
+                "TimeoutSeconds": 600,
+                "Retry": [
+                    {
+                        "ErrorEquals": [
+                            "States.ALL"
+                        ],
+                        "IntervalSeconds": 5,
+                        "MaxAttempts": 5,
+                        "BackoffRate": 3
+                    }
+                ],
+                "Catch": [
+                    {
+                        "ErrorEquals": [
+                            "States.ALL"
+                        ],
+                        "ResultPath": "$.errorInfo",
+                        "Next": "IfError"
+                    }
+                ]
+            },
+            "Again": {
+                "Type": "Choice",
+                "Choices": [
+                    {
+                        "Variable": "$.need_continue",
+                        "BooleanEquals": true,
+                        "Next": "One"
+                    }
+                ],
+                "Default": "Done"
+            },
+            "IfError": {
+                "Type": "Pass",
+                "End": true
+            },
+            "Done": {
+                "Type": "Pass",
+                "End": true
+            }
+        },
+    };
+
+    const machine = Machine.create(json);
+    var input = { need_continue: false };
+    return machine.run(input).then((output) => {
+        t.deepEqual(output, input);
+    });
+
+});
